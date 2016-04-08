@@ -70,14 +70,16 @@ end
 
 function plot1d(cov::Cov, nx, x1d_obs, fx1d_obs, nsim)
     x1d_pre, fx1d_pre, μcond, σcond = grf1d(cov, nx, x1d_obs, fx1d_obs, nsim)
+    plot1d(x1d_pre, fx1d_pre, μcond, σcond)
+end
 
+function plot1d(cov::Cov, x1d_pre, fx1d_pre, μcond, σcond)
     pobs = layer(x = x1d_obs, y = fx1d_obs, Geom.point, Theme(default_color=colorant"red", default_point_size = 0.06cm) )
     pl = [layer(x = x1d_pre, y = fx1d_pre[k], Geom.line, Theme(default_color=RGBA{Float32}(0, 0, 1, 0.2))) for k in 1:nsim]
     pribbon = layer(x = x1d_pre, y = μcond, ymin = μcond - 2σcond, ymax = μcond + 2σcond, Geom.ribbon, 
         Theme(lowlight_color=c->RGBA{Float32}(c.r, c.g, c.b, 0.2)))
     plot(pribbon, pl..., pobs, Guide.title("$(typeof(cov))"))
 end
-
 
 ######
 # 2D #
@@ -129,7 +131,7 @@ function covmat2d!(Σobs, Σcross::Matrix, Σpre::Matrix, cov::Cov, xmesh, ymesh
     nothing
 end
 
-function spyplot(xmesh, ymesh, fx2d_pre, x2d_obs, fx2d_obs)
+function spyplot(cosv, xmesh, ymesh, fx2d_pre, x2d_obs, fx2d_obs)
     spylayer = layer(x=xmesh, y=ymesh, color=fx2d_pre,
         Geom.rectbin)
     obslayer = layer(x = x2d_obs[:,1], y = x2d_obs[:,2], order = 2, Geom.point, 
@@ -142,10 +144,15 @@ function spyplot(xmesh, ymesh, fx2d_pre, x2d_obs, fx2d_obs)
                                                    colorant"red")),
         Coord.cartesian(yflip=true, fixed=true, xmin=minimum(xmesh), xmax=maximum(xmesh), ymin=minimum(ymesh), ymax=maximum(ymesh)),
         Scale.x_continuous,
-        Scale.y_continuous)
+        Scale.y_continuous,
+        Guide.title("$(typeof(cov))"))
 end
 
 
+function spyplot(cov::Cov, mesh_side::Integer, x2d_obs::Matrix, fx2d_obs::Vector, nsim::Integer)
+    xmesh, ymesh, fx2d_pre = grf2d(cov, mesh_side, x2d_obs, fx2d_obs, nsim)
+    spyplot(cov, xmesh, ymesh, fx2d_pre, x2d_obs, fx2d_obs)
+end
 
 ##############
 # likelihood #
@@ -190,6 +197,7 @@ nsim = 3
 plot1d(Cov1(), nx, x1d_obs, fx1d_obs, nsim)
 plot1d(Cov2(), nx, x1d_obs, fx1d_obs, nsim)
 plot1d(Cov3(), nx, x1d_obs, fx1d_obs, nsim)
+
 
 ######
 # 2D #
