@@ -262,7 +262,7 @@ function StackImg(i0::Int64,i1::Int64; degrade=1)
     println("   |> starting from $i0.")
     for i = i0:i1     # index of superclusters
         θc, ϕc = CoordSCluster[id_sc[i],:]   # Center Coord. of Supercluster
-        i == 1 ? ist = 1: ist = 1 + sum(N_sc[1:i-1]) 
+        i == 1 ? ist = 1 : ist = 1 + sum(N_sc[1:i-1]) 
         percent = 20
         
         if (degrade == 1) & (Nsize*Nsize < N_sc[i])

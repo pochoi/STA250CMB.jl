@@ -62,7 +62,7 @@ println("---| Constructing a Gaussian kernel of $Nsize by $Nsize map")
 x1d      = linspace(-XYsize*0.5,XYsize*0.5,Nsize)
 y1d      = linspace(XYsize*0.5,-XYsize*0.5,Nsize)
 Tmap     = Float64[ GKernel(xi,yi,0.,0.) for xi in x1d, yi in y1d];
-Umap     = Float64[ GKernel(xi,yi,0.,0.) > 0.? 1.: 0. for xi in x1d, yi in y1d];
+Umap     = Float64[ GKernel(xi,yi,0.,0.) > 0. ? 1. : 0. for xi in x1d, yi in y1d];
 TmapNorm = sum(Tmap);
 Tmap    /= TmapNorm;
 
